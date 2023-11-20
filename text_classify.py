@@ -3,14 +3,13 @@
 import shutil
 
 import numpy as np
-import torch
 from datasets import load_metric
 from transformers import AutoModelForSequenceClassification, Trainer, TrainingArguments, AutoTokenizer
 import datasets
 import json
 
-model_name = "/opt/qs/aliendao/dataroot/models/damo/nlp_roberta_backbone_std/"
-finetuned_model_path = "/opt/qs/aliendao/dataroot/models/finetune/nlp_roberta_backbone_std/"
+model_name = "/opt/qs/aliendao/dataroot/models/damo/nlp_roberta_backbone_base_std"
+finetuned_model_path = "/opt/qs/aliendao/dataroot/models/finetune/nlp_roberta_backbone_base_std"
 
 # 加载数据集
 dataset = datasets.load_dataset('csv', data_files={'train': './data/train_data.csv', 'test': './data/test_data.csv'})
