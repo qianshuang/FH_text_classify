@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import random
+from modelscope import snapshot_download
 
-my_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-
-# 从列表中随机选择3个元素
-random_elements = random.sample(my_list, 3)
-
-print("随机选择的元素:", random_elements)
+model_dir = snapshot_download("damo/nlp_roberta_backbone_base_std", revision='v1.0.0', cache_dir='')

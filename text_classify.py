@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 
+import shutil
+
 import numpy as np
 from datasets import load_metric
 from transformers import AutoModelForSequenceClassification, Trainer, TrainingArguments, AutoTokenizer
 import datasets
 import json
 
-model_name = "xlm-roberta-base"
-finetuned_model_path = "./model/finetunedM"
+model_name = "/opt/qs/aliendao/dataroot/models/damo/nlp_roberta_backbone_std/"
+finetuned_model_path = "/opt/qs/aliendao/dataroot/models/finetune/nlp_roberta_backbone_std/"
 
 # 加载数据集
 dataset = datasets.load_dataset('csv', data_files={'train': './data/train_data.csv', 'test': './data/test_data.csv'})
@@ -21,11 +23,12 @@ def tokenize_function(examples):
 tokenized_datasets = dataset.map(tokenize_function, batched=True)
 
 # label设置
-with open('./data/label_to_id.json', 'r') as f:
+label_to_id_file = "./data/label_to_id.json"
+with open(label_to_id_file, 'r') as f:
     label_to_id = json.load(f)
 id_to_label = {v: k for k, v in label_to_id.items()}
 
-model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=len(label_to_id), label2id=label_to_id, id2label=id_to_label)
+model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=len(label_to_id), label2id=label_to_id, id2label=id_to_label, device_map={"": "cuda:1"})
 metric = load_metric("./metrics/accuracy.py")
 
 
@@ -60,4 +63,5 @@ trainer.evaluate()  # 直接跑传入的验证集
 # 保存模型
 tokenizer.save_pretrained(finetuned_model_path)
 trainer.save_model(finetuned_model_path)
+shutil.copy2(label_to_id_file, finetuned_model_path)
 print("train finished...")
