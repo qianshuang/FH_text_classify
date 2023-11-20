@@ -3,6 +3,7 @@
 import shutil
 
 import numpy as np
+import torch
 from datasets import load_metric
 from transformers import AutoModelForSequenceClassification, Trainer, TrainingArguments, AutoTokenizer
 import datasets
@@ -13,7 +14,7 @@ finetuned_model_path = "/opt/qs/aliendao/dataroot/models/finetune/nlp_roberta_ba
 
 # 加载数据集
 dataset = datasets.load_dataset('csv', data_files={'train': './data/train_data.csv', 'test': './data/test_data.csv'})
-tokenizer = AutoTokenizer.from_pretrained(model_name)
+tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=False, trust_remote_code=True)
 
 
 def tokenize_function(examples):
@@ -28,7 +29,7 @@ with open(label_to_id_file, 'r') as f:
     label_to_id = json.load(f)
 id_to_label = {v: k for k, v in label_to_id.items()}
 
-model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=len(label_to_id), label2id=label_to_id, id2label=id_to_label, device_map={"": "cuda:1"})
+model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=len(label_to_id), label2id=label_to_id, id2label=id_to_label, device_map={"": "cuda:1"}, trust_remote_code=True)
 metric = load_metric("./metrics/accuracy.py")
 
 
